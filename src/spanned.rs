@@ -161,6 +161,39 @@ impl Value {
     }
 }
 
+impl Into<serde_json::Value> for Value {
+    fn into(self) -> serde_json::Value {
+        match self.into_inner() {
+            crate::Value::Null => serde_json::Value::Null,
+            crate::Value::Bool(v) => serde_json::Value::Bool(v),
+            crate::Value::Number(n) => serde_json::Value::Number(n),
+            crate::Value::String(s) => serde_json::Value::String(s),
+            crate::Value::Array(a) => serde_json::Value::Array(a.into_iter().map(|v| v.into()).collect()),
+            crate::Value::Object(m) => serde_json::Value::Object(m.into_iter().map(|(k,v)| (k.into_inner(), v.into())).collect()),
+        }
+    }
+}
+
+impl From<serde_json::Value> for Value {
+    fn from(v: serde_json::Value) -> Self {
+        match v {
+            serde_json::Value::Null => crate::Value::Null.into(),
+            serde_json::Value::Bool(b) => crate::Value::Bool(b).into(),
+            serde_json::Value::Number(n) => crate::Value::Number(n).into(),
+            serde_json::Value::String(s) => crate::Value::String(s).into(),
+            serde_json::Value::Array(a) => crate::Value::Array(a.into_iter().map(|v| v.into()).collect()).into(),
+            serde_json::Value::Object(m) => {
+                let mut o = crate::Map::new();
+                for (k, v) in m {
+                    o.insert(k.into(), v.into());
+                }
+                crate::Value::Object(o).into()
+            }
+        }
+    }
+}
+
+
 #[cfg(test)] mod tests {
     use crate::*;
 
