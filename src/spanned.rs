@@ -28,6 +28,15 @@ pub struct Spanned<V> {
 }
 
 impl<V> Spanned<V> {
+    /// Construct new entry with explicitly attached range
+    pub fn new(value: V, range: Range<usize>) -> Self {
+        Self {
+            value,
+            start: range.start,
+            end: range.end,
+        }
+    }
+
     /// Get the starting byte offset (inclusive) of this value.
     /// Likely `0` unless loaded through [crate::from_*](crate::from_slice).
     pub fn start(&self) -> usize { self.start }
