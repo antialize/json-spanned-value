@@ -37,6 +37,12 @@ impl<V> Spanned<V> {
         }
     }
 
+    /// Override range
+    pub fn set_range(&mut self, range: Range<usize>) {
+        self.start = range.start;
+        self.end = range.end;
+    }
+
     /// Get the starting byte offset (inclusive) of this value.
     /// Likely `0` unless loaded through [crate::from_*](crate::from_slice).
     pub fn start(&self) -> usize { self.start }
